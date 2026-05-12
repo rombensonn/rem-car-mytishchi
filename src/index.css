@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #162033;
+  background: #f7f4ee;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(15, 95, 186, 0.09), transparent 32rem),
+    linear-gradient(180deg, #fbfcfe 0%, #f7f4ee 48%, #fbfcfe 100%);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(245, 158, 11, 0.78);
+  outline-offset: 3px;
+}
+
+.container-page {
+  width: min(1180px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.section {
+  padding: 88px 0;
+}
+
+.eyebrow {
+  @apply inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-4 py-2 text-sm font-bold text-brand-700 shadow-card;
+}
+
+.section-title {
+  @apply mt-4 max-w-3xl text-3xl font-extrabold leading-tight tracking-normal text-ink md:text-5xl;
+}
+
+.section-lead {
+  @apply mt-4 max-w-3xl text-base leading-8 text-muted md:text-lg;
+}
+
+.btn-primary {
+  @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-amber-500 px-5 py-3 text-base font-extrabold text-ink shadow-card transition hover:bg-amber-400 active:scale-[0.99];
+}
+
+.btn-secondary {
+  @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-base font-extrabold text-brand-700 shadow-card transition hover:border-brand-100 hover:bg-brand-50 active:scale-[0.99];
+}
+
+.card {
+  @apply rounded-2xl border border-line/80 bg-white shadow-card;
+}
+
+.field {
+  @apply min-h-12 w-full rounded-lg border border-line bg-white px-4 py-3 text-base font-semibold text-ink shadow-sm transition placeholder:text-muted/70 hover:border-brand-100 focus:border-brand-700 focus:outline-none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding: 58px 0;
+  }
+
+  .container-page {
+    width: min(100% - 24px, 1180px);
+  }
+
+  body {
+    padding-bottom: 76px;
+  }
+}

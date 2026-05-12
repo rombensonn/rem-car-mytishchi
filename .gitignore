@@ -1,0 +1,7 @@
+node_modules/
+dist/
+storage/leads.*
+storage/rate_limit.json
+api/config.php
+tsconfig.tsbuildinfo
+.DS_Store
