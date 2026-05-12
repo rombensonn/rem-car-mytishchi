@@ -5,11 +5,15 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rem-car.example/privacy.html</loc>
+    <loc>https://rem-car.example/privacy-policy/</loc>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://rem-car.example/consent.html</loc>
+    <loc>https://rem-car.example/personal-data-consent/</loc>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://rem-car.example/cookies/</loc>
+    <priority>0.2</priority>
   </url>
 </urlset>

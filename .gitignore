@@ -2,6 +2,7 @@ node_modules/
 dist/
 storage/leads.*
 storage/rate_limit.json
+storage/lead-events.log
 api/config.php
 tsconfig.tsbuildinfo
 .DS_Store

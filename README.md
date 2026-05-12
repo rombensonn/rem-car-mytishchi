@@ -1,6 +1,6 @@
 # Рем Кар — лендинг автосервиса в Мытищах
 
-Одностраничный сайт для автосервиса «Рем Кар» с React/Vite frontend и PHP endpoint для заявок.
+Одностраничный сайт для автосервиса «Рем Кар» с React/Vite frontend и PHP endpoint для заявок в amoCRM.
 
 ## Что внутри
 
@@ -8,10 +8,11 @@
 - Framer Motion для мягких микроанимаций.
 - React Hook Form + Zod для клиентской валидации.
 - PHP 8.2+ endpoint `/api/lead.php`.
-- Сохранение заявок в `storage/leads.json` и `storage/leads.csv`.
-- Email-уведомления и опциональная отправка в Telegram.
+- Отправка заявок в amoCRM через backend endpoint.
+- Rate limit, honeypot и server-side validation.
 - SEO meta, OpenGraph, Twitter Cards, JSON-LD AutoRepair, `robots.txt`, `sitemap.xml`.
-- Страницы-заготовки `privacy.html` и `consent.html`.
+- Юридические страницы: `/privacy-policy/`, `/personal-data-consent/`, `/cookies/`.
+- Технический аудит юридических и персональных данных: `LEGAL_AUDIT_REPORT.md`.
 
 ## Запуск frontend
 
@@ -32,23 +33,20 @@ php -S 127.0.0.1:8081 -t .
 
 Vite проксирует `/api` на `http://127.0.0.1:8081`, поэтому формы из dev-сервера будут отправляться в PHP.
 
-## Настройка заявок
+## Настройка amoCRM
 
-Создайте `api/config.php` на основе `api/config.example.php`:
+Секреты amoCRM не должны храниться во frontend-коде. На production-сервере задайте env-переменные:
 
-```php
-<?php
-
-return [
-    'email_to' => 'owner@example.com',
-    'email_from' => 'site@example.com',
-    'telegram_bot_token' => '',
-    'telegram_chat_id' => '',
-    'rate_limit_seconds' => 60,
-];
+```bash
+AMOCRM_BASE_DOMAIN=example.amocrm.ru
+AMOCRM_ACCESS_TOKEN=...
+AMOCRM_PIPELINE_ID=...
+AMOCRM_STATUS_ID=...
+AMOCRM_RESPONSIBLE_USER_ID=...
+LEAD_RATE_LIMIT_SECONDS=60
 ```
 
-Секреты не используются во frontend. Если Telegram поля пустые, отправка в Telegram пропускается.
+Если amoCRM не настроена, endpoint вернет пользователю нейтральную ошибку отправки и запишет техническое событие в `storage/lead-events.log`.
 
 ## Сборка
 
@@ -61,5 +59,6 @@ npm run build
 ## Что нужно заменить перед публикацией
 
 - Домен `https://rem-car.example/` в `index.html`, `public/robots.txt` и `public/sitemap.xml`.
-- Юридические тексты в `public/privacy.html` и `public/consent.html`.
-- `api/config.php` с реальными получателями заявок.
+- Плейсхолдеры в `public/privacy-policy/index.html`, `public/personal-data-consent/index.html` и `public/cookies/index.html`.
+- Env-переменные amoCRM на сервере.
+- Фактические сведения о месте хранения персональных данных и используемых сервисах.

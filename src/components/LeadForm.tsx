@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, CheckCircle2, Loader2, Send } from 'lucide-react';
 import type { InputHTMLAttributes, ReactNode } from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { issueOptions } from '../data/services';
 import { leadSchema, type LeadFormValues } from '../lib/validation';
+
+const DOCUMENT_VERSION = '[ДАТА_РЕДАКЦИИ]';
 
 type LeadFormProps = {
   compact?: boolean;
@@ -15,19 +17,50 @@ type LeadFormProps = {
 const defaultValues: LeadFormValues = {
   name: '',
   phone: '',
+  email: '',
   car_model: '',
   car_year: '',
   issue_type: 'другое',
+  selected_service: 'другое',
   message: '',
   contact_method: 'звонок',
   page_source: 'landing',
+  page_url: '',
+  form_id: '',
+  referrer: '',
+  utm_source: '',
+  utm_medium: '',
+  utm_campaign: '',
+  utm_content: '',
+  utm_term: '',
   consent_personal_data: false,
-  consent_policy: false,
+  consent_policy_read: false,
+  consent_text_version: DOCUMENT_VERSION,
+  consent_timestamp: '',
   honeypot: ''
 };
 
 export function LeadForm({ compact = false, source = 'landing', defaultIssue }: LeadFormProps) {
   const documentBasePath = import.meta.env.BASE_URL;
+  const formId = `lead-${source}`;
+  const trackingDefaults = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return {};
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    return {
+      page_url: window.location.href,
+      form_id: formId,
+      referrer: document.referrer || '',
+      utm_source: params.get('utm_source') || '',
+      utm_medium: params.get('utm_medium') || '',
+      utm_campaign: params.get('utm_campaign') || '',
+      utm_content: params.get('utm_content') || '',
+      utm_term: params.get('utm_term') || ''
+    };
+  }, [formId]);
+
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [serverMessage, setServerMessage] = useState('');
   const {
@@ -39,17 +72,30 @@ export function LeadForm({ compact = false, source = 'landing', defaultIssue }: 
     resolver: zodResolver(leadSchema),
     defaultValues: {
       ...defaultValues,
+      ...trackingDefaults,
       page_source: source,
-      issue_type: (defaultIssue || defaultValues.issue_type) as LeadFormValues['issue_type']
+      issue_type: (defaultIssue || defaultValues.issue_type) as LeadFormValues['issue_type'],
+      selected_service: defaultIssue || defaultValues.issue_type
     }
   });
 
   const onSubmit = async (values: LeadFormValues) => {
     setStatus('idle');
     setServerMessage('');
+
+    const payload: LeadFormValues = {
+      ...values,
+      selected_service: values.issue_type,
+      consent_text_version: DOCUMENT_VERSION,
+      consent_timestamp: new Date().toISOString(),
+      page_url: typeof window !== 'undefined' ? window.location.href : values.page_url,
+      form_id: formId,
+      referrer: typeof document !== 'undefined' ? document.referrer : values.referrer
+    };
+
     const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      formData.append(key, typeof value === 'boolean' ? (value ? '1' : '') : String(value ?? ''));
+    Object.entries(payload).forEach(([key, value]) => {
+      formData.append(key, typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value ?? ''));
     });
 
     try {
@@ -64,7 +110,7 @@ export function LeadForm({ compact = false, source = 'landing', defaultIssue }: 
       }
       setStatus('success');
       setServerMessage(data.message || 'Заявка отправлена. Мы свяжемся с вами в рабочее время.');
-      reset({ ...defaultValues, page_source: source });
+      reset({ ...defaultValues, ...trackingDefaults, page_source: source, form_id: formId });
     } catch (error) {
       setStatus('error');
       setServerMessage(error instanceof Error ? error.message : 'Не удалось отправить заявку. Попробуйте позвонить.');
@@ -75,6 +121,16 @@ export function LeadForm({ compact = false, source = 'landing', defaultIssue }: 
     <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
       <input type="text" className="hidden" tabIndex={-1} autoComplete="off" {...register('honeypot')} aria-hidden="true" />
       <input type="hidden" value={source} {...register('page_source')} />
+      <input type="hidden" value={formId} {...register('form_id')} />
+      <input type="hidden" {...register('page_url')} />
+      <input type="hidden" {...register('selected_service')} />
+      <input type="hidden" {...register('referrer')} />
+      <input type="hidden" {...register('utm_source')} />
+      <input type="hidden" {...register('utm_medium')} />
+      <input type="hidden" {...register('utm_campaign')} />
+      <input type="hidden" {...register('utm_content')} />
+      <input type="hidden" {...register('utm_term')} />
+      <input type="hidden" value={DOCUMENT_VERSION} {...register('consent_text_version')} />
 
       <div className={compact ? 'grid gap-4' : 'grid gap-4 md:grid-cols-2'}>
         <Field label="Что случилось с автомобилем?" error={errors.issue_type?.message}>
@@ -100,6 +156,9 @@ export function LeadForm({ compact = false, source = 'landing', defaultIssue }: 
         <Field label="Телефон" error={errors.phone?.message}>
           <input className="field" type="tel" placeholder="+7" autoComplete="tel" {...register('phone')} />
         </Field>
+        <Field label="Email" error={errors.email?.message}>
+          <input className="field" type="email" placeholder="email@example.ru" autoComplete="email" {...register('email')} />
+        </Field>
         <Field label="Удобный способ связи" error={errors.contact_method?.message}>
           <select className="field" {...register('contact_method')}>
             <option value="звонок">звонок</option>
@@ -118,27 +177,27 @@ export function LeadForm({ compact = false, source = 'landing', defaultIssue }: 
           error={errors.consent_personal_data?.message}
           label={
             <>
-              Даю{' '}
-              <a className="text-brand-700 underline underline-offset-4 hover:text-brand-900" href={`${documentBasePath}consent.html`}>
-                согласие на обработку персональных данных
-              </a>{' '}
-              для обработки моей заявки и обратной связи.
+              Даю согласие на обработку персональных данных в соответствии с{' '}
+              <a className="text-brand-700 underline underline-offset-4 hover:text-brand-900" href={`${documentBasePath}personal-data-consent/`} target="_blank" rel="noreferrer">
+                Согласием на обработку персональных данных
+              </a>
+              .
             </>
           }
           {...register('consent_personal_data')}
         />
         <Checkbox
-          error={errors.consent_policy?.message}
+          error={errors.consent_policy_read?.message}
           label={
             <>
               Подтверждаю, что ознакомлен(а) с{' '}
-              <a className="text-brand-700 underline underline-offset-4 hover:text-brand-900" href={`${documentBasePath}privacy.html`}>
+              <a className="text-brand-700 underline underline-offset-4 hover:text-brand-900" href={`${documentBasePath}privacy-policy/`} target="_blank" rel="noreferrer">
                 Политикой обработки персональных данных
               </a>
               .
             </>
           }
-          {...register('consent_policy')}
+          {...register('consent_policy_read')}
         />
       </div>
 
