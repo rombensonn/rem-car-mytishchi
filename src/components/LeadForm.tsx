@@ -27,6 +27,7 @@ const defaultValues: LeadFormValues = {
 };
 
 export function LeadForm({ compact = false, source = 'landing', defaultIssue }: LeadFormProps) {
+  const documentBasePath = import.meta.env.BASE_URL;
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [serverMessage, setServerMessage] = useState('');
   const {
@@ -113,8 +114,32 @@ export function LeadForm({ compact = false, source = 'landing', defaultIssue }: 
       </Field>
 
       <div className="grid gap-3 rounded-xl border border-line bg-porcelain p-4">
-        <Checkbox error={errors.consent_personal_data?.message} label="Я даю согласие на обработку персональных данных" {...register('consent_personal_data')} />
-        <Checkbox error={errors.consent_policy?.message} label="Я ознакомлен(а) с Политикой обработки персональных данных" {...register('consent_policy')} />
+        <Checkbox
+          error={errors.consent_personal_data?.message}
+          label={
+            <>
+              Даю{' '}
+              <a className="text-brand-700 underline underline-offset-4 hover:text-brand-900" href={`${documentBasePath}consent.html`}>
+                согласие на обработку персональных данных
+              </a>{' '}
+              для обработки моей заявки и обратной связи.
+            </>
+          }
+          {...register('consent_personal_data')}
+        />
+        <Checkbox
+          error={errors.consent_policy?.message}
+          label={
+            <>
+              Подтверждаю, что ознакомлен(а) с{' '}
+              <a className="text-brand-700 underline underline-offset-4 hover:text-brand-900" href={`${documentBasePath}privacy.html`}>
+                Политикой обработки персональных данных
+              </a>
+              .
+            </>
+          }
+          {...register('consent_policy')}
+        />
       </div>
 
       {status !== 'idle' && (
@@ -146,7 +171,7 @@ const Checkbox = ({
   label,
   error,
   ...props
-}: InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string }) => (
+}: InputHTMLAttributes<HTMLInputElement> & { label: ReactNode; error?: string }) => (
   <label className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm font-bold leading-6 text-graphite">
     <input className="mt-1 h-5 w-5 rounded border-line text-brand-700" type="checkbox" {...props} />
     <span>{label}</span>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { business } from '../data/business';
 
 export function Footer() {
+  const documentBasePath = import.meta.env.BASE_URL;
   const [showCookie, setShowCookie] = useState(false);
 
   useEffect(() => {
@@ -27,8 +28,8 @@ export function Footer() {
             <span>{business.hours}; {business.sunday}</span>
           </div>
           <div className="grid gap-2 text-sm font-bold text-white/75">
-            <a className="hover:text-white" href="/privacy.html">Политика обработки персональных данных</a>
-            <a className="hover:text-white" href="/consent.html">Согласие на обработку персональных данных</a>
+            <a className="hover:text-white" href={`${documentBasePath}privacy.html`}>Политика обработки персональных данных</a>
+            <a className="hover:text-white" href={`${documentBasePath}consent.html`}>Согласие на обработку персональных данных</a>
             <span>Согласие на использование cookie</span>
           </div>
         </div>
