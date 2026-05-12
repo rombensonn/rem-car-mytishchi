@@ -62,5 +62,4 @@ npm run build
 
 - Домен `https://rem-car.example/` в `index.html`, `public/robots.txt` и `public/sitemap.xml`.
 - Юридические тексты в `public/privacy.html` и `public/consent.html`.
-- Значения `[уточнить]` в блоке ориентировочных цен, если владелец даст подтверждённые цены.
 - `api/config.php` с реальными получателями заявок.
