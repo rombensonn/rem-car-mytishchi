@@ -1,4 +1,5 @@
 import { MapPinned, MessageCircle, Navigation, Phone } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { business } from '../data/business';
 import { LeadForm } from './LeadForm';
 
@@ -36,17 +37,7 @@ export function Contacts() {
               </a>
             </div>
 
-            <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-              <iframe
-                title="Карта: Рем Кар, Мытищи, ул. Карла Маркса, 1"
-                src={business.mapEmbed}
-                width="100%"
-                height="280"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="block"
-              />
-            </div>
+            <YandexMap />
           </div>
 
           <div className="card p-5 md:p-6">
@@ -59,6 +50,46 @@ export function Contacts() {
         </div>
       </div>
     </section>
+  );
+}
+
+function YandexMap() {
+  const [shouldLoadMap, setShouldLoadMap] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShouldLoadMap(true), 250);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="mt-6 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+      <div className="relative h-[240px] bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_52%,#fff7ed_100%)] md:h-[260px]">
+        {!isLoaded && (
+          <div className="absolute inset-0 grid place-items-center p-5 text-center">
+            <div>
+              <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-brand-700 text-white shadow-card">
+                <MapPinned className="h-6 w-6" aria-hidden="true" />
+              </div>
+              <p className="mt-3 text-sm font-extrabold text-ink">Загружаем Яндекс.Карту с точкой входа</p>
+              <p className="mt-1 text-sm font-bold text-muted">Мытищи, ул. Карла Маркса, 1</p>
+            </div>
+          </div>
+        )}
+        {shouldLoadMap && (
+          <iframe
+            title="Карта: Рем Кар, Мытищи, ул. Карла Маркса, 1"
+            src={business.mapEmbed}
+            width="100%"
+            height="100%"
+            loading="eager"
+            referrerPolicy="no-referrer-when-downgrade"
+            onLoad={() => setIsLoaded(true)}
+            className={`absolute inset-0 block h-full w-full transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          />
+        )}
+      </div>
+    </div>
   );
 }
 

@@ -79,23 +79,49 @@ export function Hero() {
               ))}
             </div>
 
-            <div className="mt-5 grid gap-3 rounded-2xl bg-ink p-4 text-white sm:grid-cols-2">
-              <span className="flex items-center gap-2 text-sm font-bold">
-                <MapPin className="h-4 w-4 text-amber-400" aria-hidden="true" />
-                {business.address}
-              </span>
-              <span className="flex items-center gap-2 text-sm font-bold">
-                <CalendarClock className="h-4 w-4 text-amber-400" aria-hidden="true" />
-                {business.hours}
-              </span>
-              <span className="flex items-center gap-2 text-sm font-bold">
-                <Gauge className="h-4 w-4 text-amber-400" aria-hidden="true" />
-                Нормочас {business.laborRate}
-              </span>
-              <a className="flex items-center gap-2 text-sm font-bold underline-offset-4 hover:underline" href={business.phoneHref}>
-                <Phone className="h-4 w-4 text-amber-400" aria-hidden="true" />
-                {business.phone}
-              </a>
+            <div className="mt-5 overflow-hidden rounded-2xl bg-ink text-white shadow-card">
+              <div className="relative p-4">
+                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-brand-500/25 blur-2xl" aria-hidden="true" />
+                <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+                  <div>
+                    <p className="text-xs font-extrabold uppercase tracking-wide text-brand-100">Сервисная точка</p>
+                    <p className="mt-1 text-lg font-black leading-tight">Заезд, время и связь в одном месте</p>
+                  </div>
+                  <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-black text-ink">открыто Пн-Сб</span>
+                </div>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-[1.2fr_0.8fr]">
+                  <div className="rounded-xl border border-white/10 bg-white/8 p-4">
+                    <span className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wide text-brand-100">
+                      <MapPin className="h-4 w-4 text-amber-400" aria-hidden="true" />
+                      Точка приезда
+                    </span>
+                    <p className="mt-2 text-base font-black">{business.address}</p>
+                    <a className="mt-3 inline-flex text-sm font-extrabold text-amber-300 underline-offset-4 hover:underline" href={business.routeHref} target="_blank" rel="noreferrer">
+                      Открыть в Яндекс Картах
+                    </a>
+                  </div>
+
+                  <div className="grid gap-3">
+                    <span className="rounded-xl border border-white/10 bg-white/8 p-3 text-sm font-bold">
+                      <CalendarClock className="mb-2 h-4 w-4 text-amber-400" aria-hidden="true" />
+                      {business.hours}
+                    </span>
+                    <span className="rounded-xl border border-white/10 bg-white/8 p-3 text-sm font-bold">
+                      <Gauge className="mb-2 h-4 w-4 text-amber-400" aria-hidden="true" />
+                      Нормочас {business.laborRate}
+                    </span>
+                  </div>
+                </div>
+
+                <a
+                  className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-black text-brand-800 transition hover:bg-amber-50"
+                  href={business.phoneHref}
+                >
+                  <Phone className="h-4 w-4" aria-hidden="true" />
+                  {business.phone}
+                </a>
+              </div>
             </div>
 
             <div className="mt-5 rounded-2xl border border-brand-100 bg-brand-50 p-4">

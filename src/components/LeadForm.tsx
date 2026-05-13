@@ -172,6 +172,11 @@ export function LeadForm({ compact = false, source = 'landing', defaultIssue }: 
         <textarea className="field min-h-28 resize-y" placeholder="Опишите симптомы, когда появились, что уже проверяли" {...register('message')} />
       </Field>
 
+      <button className="btn-primary w-full" type="submit" disabled={isSubmitting}>
+        {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> : <Send className="h-5 w-5" aria-hidden="true" />}
+        {isSubmitting ? 'Отправляем...' : 'Отправить заявку'}
+      </button>
+
       <div className="grid gap-3 rounded-xl border border-line bg-porcelain p-4">
         <Checkbox
           error={errors.consent_personal_data?.message}
@@ -208,10 +213,6 @@ export function LeadForm({ compact = false, source = 'landing', defaultIssue }: 
         </div>
       )}
 
-      <button className="btn-primary w-full" type="submit" disabled={isSubmitting}>
-        {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> : <Send className="h-5 w-5" aria-hidden="true" />}
-        {isSubmitting ? 'Отправляем...' : 'Отправить заявку'}
-      </button>
     </form>
   );
 }
